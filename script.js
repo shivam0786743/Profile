@@ -813,28 +813,47 @@ function triggerConfetti() {
 }
 
 // ==========================================
-// 14. INTERACTIVE FORM SUBMISSION
+// 14. INTERACTIVE FORM SUBMISSION (Direct WhatsApp)
 // ==========================================
 function handleFormSubmit(e) {
   e.preventDefault();
-  const name = document.getElementById('form-name').value;
-  const email = document.getElementById('form-email').value;
+  const name = document.getElementById('form-name').value.trim();
+  const email = document.getElementById('form-email').value.trim();
+  const subject = document.getElementById('form-subject')?.value.trim() || 'Portfolio Collaboration Inquiry';
+  const message = document.getElementById('form-message').value.trim();
   const submitBtn = document.getElementById('form-submit-btn');
 
   submitBtn.disabled = true;
-  submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Encrypting &amp; Transmitting...</span>`;
+  submitBtn.innerHTML = `<i class="fa-brands fa-whatsapp fa-spin text-base"></i> <span>Opening WhatsApp...</span>`;
+
+  // Format message cleanly for WhatsApp
+  const waText = encodeURIComponent(
+    `*Hello Shivam!*\n` +
+    `I am contacting you from your Portfolio website:\n\n` +
+    `👤 *Name:* ${name}\n` +
+    `📧 *Email:* ${email}\n` +
+    `📌 *Subject:* ${subject}\n\n` +
+    `💬 *Message:*\n${message}`
+  );
+
+  const waUrl = `https://api.whatsapp.com/send?phone=919992911619&text=${waText}`;
 
   setTimeout(() => {
     sfx.playSuccess();
     triggerConfetti();
-    showToast(`Thank you, ${name}! Message received. Shivam will contact you shortly.`);
+    showToast(`Redirecting ${name} to WhatsApp chat... 💬`);
+
+    // Open WhatsApp in new tab / WhatsApp app on mobile
+    window.open(waUrl, '_blank');
+
     submitBtn.disabled = false;
-    submitBtn.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span>Message Transmitted Successfully!</span>`;
+    submitBtn.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span>Redirected to WhatsApp!</span>`;
     document.getElementById('contact-form').reset();
+
     setTimeout(() => {
-      submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span>Transmit Message</span>`;
+      submitBtn.innerHTML = `<i class="fa-brands fa-whatsapp text-base"></i> <span>Send Message via WhatsApp</span>`;
     }, 4000);
-  }, 1000);
+  }, 500);
 }
 
 // Mobile Menu Toggle
